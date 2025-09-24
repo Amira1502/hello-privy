@@ -9,16 +9,16 @@ import tsParser from '@typescript-eslint/parser'
 export default [
   { ignores: ['dist'] },
   {
-    files: ['**/*.{js,jsx,ts,tsx}'],  // 👈 Add TS + TSX here
+    files: ['**/*.{js,jsx,ts,tsx}'],  
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
-      parser: tsParser,              // 👈 Use TS parser
+      parser: tsParser,              
       parserOptions: {
         ecmaVersion: 'latest',
         ecmaFeatures: { jsx: true },
         sourceType: 'module',
-        project: './tsconfig.json', // 👈 link to tsconfig
+        project: './tsconfig.json', 
       },
     },
     settings: { react: { version: '18.3' } },
@@ -26,14 +26,14 @@ export default [
       react,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
-      '@typescript-eslint': tseslint, // 👈 Add TS plugin
+      '@typescript-eslint': tseslint, 
     },
     rules: {
       ...js.configs.recommended.rules,
       ...react.configs.recommended.rules,
       ...react.configs['jsx-runtime'].rules,
       ...reactHooks.configs.recommended.rules,
-      ...tseslint.configs.recommended.rules, // 👈 Add TS rules
+      ...tseslint.configs.recommended.rules, 
       'react/jsx-no-target-blank': 'off',
       'react-refresh/only-export-components': [
         'warn',
