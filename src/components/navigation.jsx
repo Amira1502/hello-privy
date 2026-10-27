@@ -6,7 +6,7 @@ import styles from '@/styles/app.module.css'
 
 import { useLogin, useLogout, usePrivy } from '@privy-io/react-auth'
 import { useNEAR } from '../context/useNear'
-import { NEAR } from '@near-js/tokens'
+import { NEAR } from 'near-api-js/tokens'
 
 export const Navigation = () => {
   const [action, setAction] = useState(() => {})
