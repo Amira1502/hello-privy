@@ -2,34 +2,31 @@
   "name": "hello-privy",
   "private": true,
   "version": "1.0.0",
-  "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run typecheck && vite build",
     "lint:fix": "eslint --fix src",
     "prettier:fix": "prettier --write .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint src",
+    "test": "node --test tests/*.test.mjs",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@near-js/accounts": "^2.2.5",
-    "@near-js/providers": "^2.2.5",
-    "@near-js/tokens": "^2.2.5",
-    "@near-js/transactions": "^2.2.5",
     "@noble/hashes": "^1.8.0",
-    "@privy-io/react-auth": "^2.21.1",
+    "@privy-io/react-auth": "^3.51.0",
     "@scure/base": "^1.2.6",
     "bootstrap": "^5",
     "bootstrap-icons": "^1.11.3",
     "react": "^18",
     "react-dom": "^18",
-    "react-router": "^7"
+    "react-router": "^7",
+    "near-api-js": "^7.4.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "@typescript-eslint/eslint-plugin": "^8.44.1",
-    "@typescript-eslint/parser": "^8.44.1",
     "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^9.17.0",
     "eslint-plugin-react": "^7.37.2",
@@ -38,7 +35,14 @@
     "globals": "^15.14.0",
     "prettier": "^3.6.2",
     "vite": "^6.3.5",
-    "vite-plugin-node-polyfills": "^0.24.0"
+    "vite-plugin-node-polyfills": "^0.24.0",
+    "typescript": "~5.9.3",
+    "@typescript-eslint/parser": "^8.44.1",
+    "@typescript-eslint/eslint-plugin": "^8.44.1",
+    "@types/node": "^22"
   },
-  "packageManager": "pnpm@10.17.1+sha512.17c560fca4867ae9473a3899ad84a88334914f379be46d455cbf92e5cf4b39d34985d452d2583baf19967fa76cb5c17bc9e245529d0b98745721aa7200ecaf7a"
+  "engines": {
+    "node": ">=22.22.2"
+  },
+  "type": "module"
 }

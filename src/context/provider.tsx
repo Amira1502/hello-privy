@@ -1,64 +1,61 @@
-// NEARxPrivy.tsx
-import { usePrivy } from '@privy-io/react-auth';
-import { useCreateWallet, useSignRawHash } from '@privy-io/react-auth/extended-chains';
-import { JsonRpcProvider } from '@near-js/providers';
-import { Account } from '@near-js/accounts';
-import { useEffect, useState, ReactNode } from 'react';
-import { NearContext } from './useNear';
-import { providerUrl } from '../config';
-import { privySigner } from './signer';
+// Privy
+import { usePrivy } from '@privy-io/react-auth'
+import { useCreateWallet } from '@privy-io/react-auth/extended-chains'
+import { useSignRawHash } from '@privy-io/react-auth/extended-chains'
 
-// Create a NEAR provider instance
-const provider = new JsonRpcProvider({ url: providerUrl });
+// near api js
+import { JsonRpcProvider } from 'near-api-js'
+import { Account } from 'near-api-js'
 
-// Props type
-type NEARxPrivyProps = {
-  children: ReactNode;
-};
+// config
+import { useEffect, useRef, type PropsWithChildren } from 'react'
+import { useState } from 'react'
+import { NearContext } from './useNear'
+import { providerUrl } from '../config'
+import { privySigner } from './signer'
 
-export function NEARxPrivy({ children }: NEARxPrivyProps) {
-  const { authenticated, user } = usePrivy();
-  const [walletId, setWalletId] = useState<string>('');
-  const [nearAccount, setNearAccount] = useState<Account | null>(null);
+// Provider
+const provider = new JsonRpcProvider({ url: providerUrl })
 
-  const { signRawHash } = useSignRawHash();
-  const { createWallet } = useCreateWallet();
+export function NEARxPrivy({ children }: PropsWithChildren) {
+  const { authenticated, user } = usePrivy()
+  const [walletId, setWalletId] = useState('')
+  const [nearAccount, setNearAccount] = useState<Account | null>(null)
+
+  const { signRawHash } = useSignRawHash()
+  const { createWallet } = useCreateWallet()
+  const creatingWallet = useRef(false)
 
   useEffect(() => {
-    if (authenticated) {
-      if (!user?.wallet) {
-        createWallet({ chainType: 'near' });
-      } else {
-        // Create a privy signer instance
-        const signerInstance = new privySigner(signRawHash, user.wallet.address, provider);
-
-        // Wrap signer to implement all required NEAR methods
-        const signerWrapper = {
-          getPublicKey: signerInstance.getPublicKey.bind(signerInstance),
-          signTransaction: signerInstance.signTransaction.bind(signerInstance),
-          // Optional unsupported NEAR methods
-          async signNep413Message(_: Uint8Array) {
-            throw new Error('signNep413Message is not supported by privySigner');
-          },
-          async signDelegateAction(_: any) {
-            throw new Error('signDelegateAction is not supported by privySigner');
-          },
-        };
-
-        // Create the NEAR account with the wrapped signer
-        const acc = new Account(user.wallet.address, provider, signerWrapper as any);
-        setNearAccount(acc);
-        setWalletId(user.wallet.address);
-      }
-    } else {
-      setWalletId('');
-      setNearAccount(null);
+    if (!authenticated || !user) {
+      setWalletId('')
+      setNearAccount(null)
+      return
     }
-  }, [authenticated, user, createWallet, signRawHash]);
+
+    // A user may also have an Ethereum/Solana wallet. Select the NEAR wallet
+    // explicitly rather than treating the first linked wallet as a NEAR account.
+    const nearWallet = user.linkedAccounts.find((account) =>
+      account.type === 'wallet' && account.chainType === 'near'
+    )
+    if (nearWallet?.type !== 'wallet') {
+      if (!creatingWallet.current) {
+        creatingWallet.current = true
+        createWallet({ chainType: 'near' })
+          .catch((error) => console.error('Could not create NEAR wallet', error))
+          .finally(() => { creatingWallet.current = false })
+      }
+      return
+    }
+
+    const signer = new privySigner(signRawHash, nearWallet.address, provider)
+    setNearAccount(new Account(nearWallet.address, provider, signer))
+    setWalletId(nearWallet.address)
+  }, [authenticated, user, createWallet, signRawHash])
 
   return (
     <NearContext.Provider value={{ provider, nearAccount, walletId }}>
       {children}
     </NearContext.Provider>
-  );
+  )
 }

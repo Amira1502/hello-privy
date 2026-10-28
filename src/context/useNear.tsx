@@ -1,27 +1,16 @@
-// useNear.tsx
-import { createContext, useContext } from 'react';
-import type { Account } from '@near-js/accounts';
-import type { JsonRpcProvider } from '@near-js/providers';
+import { useContext, createContext } from 'react'
+import type { Account, JsonRpcProvider } from 'near-api-js'
 
-// Define the shape of the context
-interface NearContextType {
-  nearAccount: Account | null;
-  walletId: string;
-  provider: JsonRpcProvider | null;
+interface NearContextValue {
+  nearAccount: Account | null
+  walletId: string
+  provider: JsonRpcProvider
 }
 
-// Create the context with default values
-export const NearContext = createContext<NearContextType>({
-  walletId: '',
-  nearAccount: null,
-  provider: null,
-});
+export const NearContext = createContext<NearContextValue | undefined>(undefined)
 
-// Hook to consume the context
-export function useNEAR(): NearContextType {
-  const context = useContext(NearContext);
-  if (!context) {
-    throw new Error('useNEAR must be used within a <NEARxPrivy> provider');
-  }
-  return context;
+export function useNEAR(): NearContextValue {
+  const context = useContext(NearContext)
+  if (!context) throw new Error('useNEAR must be used within a <NEARxPrivy> provider')
+  return context
 }

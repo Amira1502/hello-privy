@@ -5,13 +5,11 @@ import HelloNear from './pages/hello_near'
 import { BrowserRouter, HashRouter, Routes, Route } from 'react-router'
 
 import { PrivyProvider } from '@privy-io/react-auth'
-// @ts-ignore: missing type declarations for './context/provider'
 import { NEARxPrivy } from './context/provider'
 
 function App() {
   // Use HashRouter when deployed under a subpath (GitHub Pages)
-  const baseHref = document.querySelector('base')?.getAttribute('href') ?? '/'
-  const useHashRouter = baseHref !== '/'
+  const useHashRouter = import.meta.env.BASE_URL !== '/'
   const Router = useHashRouter ? HashRouter : BrowserRouter
 
   return (
