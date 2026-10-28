@@ -21,29 +21,25 @@ export default function HelloNear() {
   const { provider, nearAccount } = useNEAR()
 
   const fetchGreeting = useCallback(async () => {
-    const greeting = await provider.callFunction(CONTRACT, 'get_greeting', {})
+    const greeting = await provider.callFunction({ contractId: CONTRACT, method: 'get_greeting', args: {} })
     setGreeting(greeting)
   }, [provider])
 
   const saveGreeting = async () => {
-    nearAccount
-      .callFunction({
+    if (!nearAccount) return
+    setShowSpinner(true)
+    try {
+      await nearAccount.callFunction({
         contractId: CONTRACT,
         methodName: 'set_greeting',
         args: { greeting: newGreeting },
       })
-      .catch((e) => {
-        alert(
-          `Error, did you deposit any NEAR Ⓝ? You can get some at https://dev.near.org/faucet`
-        )
-        console.log(`Error saving greeting: ${e.message}`)
-        fetchGreeting()
-      })
-
-    setShowSpinner(true)
-    await new Promise((resolve) => setTimeout(resolve, 300))
-    setGreeting(newGreeting)
-    setShowSpinner(false)
+      await fetchGreeting()
+    } catch (error) {
+      alert(`Error saving greeting: ${error.message}. Make sure your account has NEAR for gas.`)
+    } finally {
+      setShowSpinner(false)
+    }
   }
 
   useEffect(() => {

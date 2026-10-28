@@ -2,9 +2,9 @@ import { useContext, createContext } from 'react'
 
 /**
  * @typedef {Object} NearContext
- * @property {import('@near-js/accounts').Account | null} nearAccount The NEAR account instance
+ * @property {import('near-api-js').Account | null} nearAccount The NEAR account instance
  * @property {string} walletId The user's NEAR wallet address
- * @property {import('@near-js/providers').JsonRpcProvider} provider A NEAR JSON RPC provider
+ * @property {import('near-api-js').JsonRpcProvider} provider A NEAR JSON RPC provider
  */
 
 /** @type {import('react').Context<NearContext>} */
